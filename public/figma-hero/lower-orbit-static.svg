@@ -1,0 +1,8 @@
+<svg width="1434" height="900" viewBox="0 0 1434 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <mask id="orbit-mask" fill="white"><path d="M1144 690.5C1144 779.694 1071.25 852 981.5 852C891.754 852 819 779.694 819 690.5C819 601.306 891.754 529 981.5 529C1071.25 529 1144 601.306 1144 690.5Z"/></mask>
+    <linearGradient id="orbit-gradient" x1="792.132" y1="754.242" x2="1077.25" y2="555.732" gradientUnits="userSpaceOnUse"><stop stop-color="#B64046" stop-opacity="0"/><stop offset="1" stop-color="#501C1F"/></linearGradient>
+  </defs>
+  <ellipse cx="981.5" cy="690.5" rx="162.5" ry="161.5" stroke-width="2" stroke="url(#orbit-gradient)" mask="url(#orbit-mask)"/>
+  <circle cx="1144" cy="690.5" r="6" fill="#B64046"/>
+</svg>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { experience } from './App.jsx'
@@ -363,9 +363,88 @@ function Impact() {
   return <section className="p-impact" aria-label="Portfolio impact"><div className="p-impact-metrics">{metrics.map(([number, label]) => <div key={number}><strong>{number}</strong><span>{label}</span></div>)}</div><div className="p-impact-actions"><a className="button button-primary" href="#contact">Let’s Talk <ArrowUpRight size={18} /></a></div></section>
 }
 
+function useTimelineDrawing(journeyRef, pathRef, reduceMotion) {
+  useLayoutEffect(() => {
+    const journey = journeyRef.current
+    const path = pathRef.current
+    if (!journey || !path || reduceMotion) return undefined
+
+    const svg = path.ownerSVGElement
+    const markers = [...journey.querySelectorAll('.p-timeline-node')]
+    const entries = markers.map(marker => marker.closest('.p-timeline-entry'))
+    const length = path.getTotalLength()
+    const sampleCount = 240
+    const samples = Array.from({ length: sampleCount + 1 }, (_, index) => path.getPointAtLength(length * index / sampleCount))
+    let frame = 0
+    let disposed = false
+
+    const update = () => {
+      frame = 0
+      const showTimeline = getComputedStyle(svg).display !== 'none'
+      journey.classList.toggle('is-timeline-animated', showTimeline)
+      if (!showTimeline) {
+        path.style.strokeDashoffset = '0'
+        markers.forEach(marker => marker.classList.remove('is-reached'))
+        entries.forEach(entry => entry?.classList.remove('is-reached'))
+        return
+      }
+
+      const matrix = path.getScreenCTM()
+      if (!matrix) return
+      const points = samples.map(point => ({
+        x: point.x * matrix.a + point.y * matrix.c + matrix.e,
+        y: point.x * matrix.b + point.y * matrix.d + matrix.f,
+      }))
+      const revealAt = window.innerHeight * 0.78
+      let visibleIndex = 0
+      while (visibleIndex < sampleCount && points[visibleIndex + 1].y <= revealAt) visibleIndex += 1
+      const progress = points[0].y <= revealAt ? visibleIndex / sampleCount : 0
+      path.style.strokeDashoffset = String(1 - progress)
+
+      markers.forEach((marker, markerIndex) => {
+        const rect = marker.getBoundingClientRect()
+        const centerX = rect.left + rect.width / 2
+        const centerY = rect.top + rect.height / 2
+        let nearestIndex = 0
+        let nearestDistance = Infinity
+        points.forEach((point, index) => {
+          const distance = (point.x - centerX) ** 2 + (point.y - centerY) ** 2
+          if (distance < nearestDistance) { nearestDistance = distance; nearestIndex = index }
+        })
+        const reached = progress > 0 && visibleIndex >= nearestIndex
+        marker.classList.toggle('is-reached', reached)
+        entries[markerIndex]?.classList.toggle('is-reached', reached)
+      })
+    }
+
+    const scheduleUpdate = () => { if (!disposed && !frame) frame = requestAnimationFrame(update) }
+    update()
+    window.addEventListener('scroll', scheduleUpdate, { passive: true })
+    window.addEventListener('resize', scheduleUpdate)
+    const resizeObserver = new ResizeObserver(scheduleUpdate)
+    resizeObserver.observe(journey)
+    document.fonts?.ready.then(scheduleUpdate)
+    return () => {
+      disposed = true
+      window.removeEventListener('scroll', scheduleUpdate)
+      window.removeEventListener('resize', scheduleUpdate)
+      resizeObserver.disconnect()
+      cancelAnimationFrame(frame)
+      journey.classList.remove('is-timeline-animated')
+      path.style.strokeDashoffset = ''
+      markers.forEach(marker => marker.classList.remove('is-reached'))
+      entries.forEach(entry => entry?.classList.remove('is-reached'))
+    }
+  }, [journeyRef, pathRef, reduceMotion])
+}
+
 export function ExperienceSection() {
   const [selectedJob, setSelectedJob] = useState(null)
   const dialogRef = useRef(null)
+  const journeyRef = useRef(null)
+  const timelinePathRef = useRef(null)
+  const reduceMotion = useReducedMotion()
+  useTimelineDrawing(journeyRef, timelinePathRef, reduceMotion)
   useEffect(() => {
     const dialog = dialogRef.current
     if (selectedJob && dialog && !dialog.open) dialog.showModal()
@@ -378,8 +457,10 @@ export function ExperienceSection() {
   }])
   return <section id="experience" className="portfolio-page experience-theme embedded-section" aria-labelledby="experience-title">
     <div className="p-main">
-    <div className="p-journey">
-      <img className="p-journey-path" src="/figma-work-experience/timeline.svg" alt="" />
+    <div className="p-journey" ref={journeyRef}>
+      <svg className="p-journey-path" width="208.712" height="511.017" viewBox="0 0 208.712 511.017" fill="none" overflow="visible" aria-hidden="true">
+        <path ref={timelinePathRef} pathLength="1" d="M207.465 8.22236C16.0319 -48.2113 337.565 297.544 139.334 306.089C-58.8956 314.635 162.501 530.942 0.289669 507.197" stroke="#A01C1C" strokeWidth="4" />
+      </svg>
       <img className="p-journey-dots" src="/figma-work-experience/dots.svg" alt="" />
       <Reveal className="p-exp-intro">
         <div className="p-journey-art" aria-hidden="true"><img src="/figma-work-experience/orbit.svg" alt="" /><img src="/figma-work-experience/sphere.svg" alt="" /></div>

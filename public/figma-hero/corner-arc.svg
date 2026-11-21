@@ -1,3 +1,15 @@
 <svg width="240" height="170" viewBox="1194 0 240 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .orbit-still { display: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .orbit-moving { display: none; }
+      .orbit-still { display: inline; }
+    }
+  </style>
   <path d="M1199 -1C1199 89.5747 1272.87 163 1364 163C1455.13 163 1529 89.5747 1529 -1" stroke="#C5BCB0" stroke-width="1"/>
+  <circle class="orbit-still" cx="1262" cy="128" r="4.9" fill="#B64046" />
+  <circle class="orbit-moving" r="4.9" fill="#B64046">
+    <animateMotion dur="7s" repeatCount="indefinite" path="M1199 -1 C1199 89.5747 1272.87 163 1364 163" />
+    <animate attributeName="opacity" dur="7s" repeatCount="indefinite" values="0;1;1;0" keyTimes="0;0.05;0.9;1" />
+  </circle>
 </svg>

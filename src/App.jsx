@@ -99,41 +99,54 @@ function MagneticLink({ children, className = '', href, ...props }) {
   return <a href={href} className={`magnetic ${className}`} data-magnetic {...props}>{children}</a>
 }
 
+function BrandMark() {
+  return <a className="monogram" href="#home" aria-label="Shreejit Gautam, back to home"><span>S</span><i>/</i><span>G</span></a>
+}
+
+function ResumeLink() {
+  return <a className="header-cta" href="/shreejit-gautam-cv.pdf" target="_blank" rel="noreferrer"><Download size={16} strokeWidth={2} /> Resume</a>
+}
+
 export function Header({ active, menuOpen, setMenuOpen }) {
-  const [visible, setVisible] = useState(true)
+  const [visible, setVisible] = useState(false)
   const [darkBackground, setDarkBackground] = useState(false)
   const headerRef = useRef(null)
 
   useEffect(() => {
-    let previousY = window.scrollY
-    const updateHeader = () => {
-      const currentY = window.scrollY
+    let hideTimer
+    const updateTheme = () => {
       const section = [...document.querySelectorAll('main > section')].find(element => {
         const rect = element.getBoundingClientRect()
         return rect.top <= 36 && rect.bottom > 36
       })
       setDarkBackground(section?.id === 'work' || section?.id === 'contact')
-      if (currentY < 10) { setVisible(true); previousY = currentY }
-      else if (Math.abs(currentY - previousY) >= 4) {
-        if (currentY < previousY) setVisible(true)
-        else if (!menuOpen && !headerRef.current?.contains(document.activeElement)) setVisible(false)
-        previousY = currentY
-      }
     }
-    updateHeader()
-    window.addEventListener('scroll', updateHeader, { passive: true })
-    window.addEventListener('resize', updateHeader)
+    const scheduleHide = () => {
+      window.clearTimeout(hideTimer)
+      hideTimer = window.setTimeout(() => {
+        if (!menuOpen && !headerRef.current?.contains(document.activeElement) && !document.activeElement?.classList.contains('nav-reveal')) setVisible(false)
+      }, 2200)
+    }
+    const handleScroll = () => { updateTheme(); setVisible(true); scheduleHide() }
+    const handleFocusOut = () => scheduleHide()
+    updateTheme()
+    if (!menuOpen) scheduleHide()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('resize', updateTheme)
+    document.addEventListener('focusout', handleFocusOut)
     return () => {
-      window.removeEventListener('scroll', updateHeader)
-      window.removeEventListener('resize', updateHeader)
+      window.clearTimeout(hideTimer)
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', updateTheme)
+      document.removeEventListener('focusout', handleFocusOut)
     }
   }, [menuOpen])
 
   return (
+    <>
+    <button type="button" className="nav-reveal" onFocus={() => setVisible(true)} onClick={() => setVisible(true)}>Show navigation</button>
     <header ref={headerRef} className={`site-header ${active === 'home' ? 'is-hero' : ''} ${darkBackground ? 'is-dark' : ''} ${visible ? '' : 'is-hidden'}`} inert={!visible}>
-      <a className="monogram" href="#home" aria-label="Shreejit Gautam, back to home">
-        <span>S</span><i>/</i><span>G</span>
-      </a>
+      <BrandMark />
       <div className="header-rule" aria-hidden="true"><span>PORTFOLIO / 2026</span></div>
       <nav className={`main-nav ${menuOpen ? 'is-open' : ''}`} aria-label="Main navigation" id="main-navigation">
         {navigation.map(([name, target]) => (
@@ -142,13 +155,12 @@ export function Header({ active, menuOpen, setMenuOpen }) {
           </a>
         ))}
       </nav>
-      {active === 'home'
-        ? <a className="header-cta" href="/shreejit-gautam-cv.pdf" target="_blank" rel="noreferrer"><Download size={16} strokeWidth={2} /> Resume</a>
-        : <MagneticLink className="header-cta" href="#contact">Let’s talk <ArrowUpRight size={16} strokeWidth={2} /></MagneticLink>}
+      <ResumeLink />
       <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="main-navigation" aria-label={menuOpen ? 'Close menu' : 'Open menu'}>
         {menuOpen ? <X size={23} /> : <Menu size={23} />}
       </button>
     </header>
+    </>
   )
 }
 
@@ -195,6 +207,41 @@ export function SocialRail() {
   )
 }
 
+function AnimatedStat({ value, reduceMotion }) {
+  const [count, setCount] = useState(reduceMotion ? value : 1)
+  const statRef = useRef(null)
+
+  useEffect(() => {
+    if (reduceMotion) {
+      setCount(value)
+      return undefined
+    }
+
+    const node = statRef.current
+    if (!node) return undefined
+    let tween
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return
+      observer.disconnect()
+      const progress = { value: 1 }
+      tween = gsap.to(progress, {
+        value,
+        delay: 0.65,
+        duration: 1.8,
+        ease: 'power2.out',
+        onUpdate: () => setCount(Math.floor(progress.value)),
+        onComplete: () => setCount(value),
+      })
+    }, { threshold: 0.2 })
+    observer.observe(node)
+    return () => { observer.disconnect(); tween?.kill() }
+  }, [value, reduceMotion])
+
+  const display = count >= 1000 ? `${(Math.floor(count / 100) / 10).toFixed(1).replace(/\.0$/, '')}K` : String(count)
+  const accessibleValue = value === 5000 ? '5 thousand plus' : `${value} plus`
+  return <strong ref={statRef}><span className="sr-only">{accessibleValue}</span><span className="stat-value" aria-hidden="true">{display}</span><span aria-hidden="true">+</span></strong>
+}
+
 function Hero({ heroRef, reduceMotion }) {
   const entrance = (delay = 0, y = 24) => reduceMotion ? {} : {
     initial: { opacity: 0, y },
@@ -203,11 +250,16 @@ function Hero({ heroRef, reduceMotion }) {
   }
   return (
     <section className="hero" id="home" ref={heroRef} aria-labelledby="hero-title">
+      <div className="hero-identity">
+        <BrandMark />
+        <div className="header-rule" aria-hidden="true"><span>PORTFOLIO / 2026</span></div>
+        <ResumeLink />
+      </div>
       <div className="hero-grid" aria-hidden="true">
         <img src="/figma-hero/hero-grid.svg" alt="" className="hero-grid-svg" />
       </div>
       <div className="corner-arc" aria-hidden="true">
-        <img src="/figma-hero/corner-arc.svg" alt="" />
+        <img src={reduceMotion ? '/figma-hero/corner-arc-static.svg' : '/figma-hero/corner-arc.svg'} alt="" />
       </div>
 
       <motion.div className="hero-topline" {...entrance(0.05)}>
@@ -218,8 +270,8 @@ function Hero({ heroRef, reduceMotion }) {
       </motion.div>
 
       <div className="hero-art absolute inset-0 pointer-events-none" aria-hidden="true">
-        <img className="hero-fine-orbit" src="/figma-hero/fine-orbit.svg" alt="" />
-        <img className="hero-lower-orbit" src="/figma-hero/lower-orbit.svg" alt="" />
+        <img className="hero-fine-orbit" src={reduceMotion ? '/figma-hero/fine-orbit-static.svg' : '/figma-hero/fine-orbit.svg'} alt="" />
+        <img className="hero-lower-orbit" src={reduceMotion ? '/figma-hero/lower-orbit-static.svg' : '/figma-hero/lower-orbit.svg'} alt="" />
         <div className="orbit-cross">+</div>
         <img className="art-sphere" src="/figma-hero/sphere-3d.svg" data-parallax="sphere" alt="" />
         <img className="art-dots" src="/figma-hero/dot-grid.svg" alt="" />
@@ -228,14 +280,13 @@ function Hero({ heroRef, reduceMotion }) {
       </div>
 
       <motion.div className="name-block" {...entrance(0.12, 38)}>
-        <h1 id="hero-title" className="sr-only">SHREEJIT GAUTAM</h1>
-        <div className="name-visual" aria-hidden="true">
-          <img className="name-shreejit" src="/figma-hero/shreejit-title.svg" alt="SHREEJIT" />
-          <div className="name-gautam-row">
-            <img className="name-gautam" src="/figma-hero/gautam-title.svg" alt="GAUTAM" />
+        <h1 id="hero-title" className="name-visual">
+          <span className="name-shreejit">SHREEJIT</span>
+          <span className="name-gautam-row">
+            <span className="name-gautam">GAUTAM</span>
             <img className="name-swoosh" src="/figma-hero/swoosh.svg" alt="" />
-          </div>
-        </div>
+          </span>
+        </h1>
       </motion.div>
 
       <div className="portrait-mask" aria-hidden="true">
@@ -258,11 +309,12 @@ function Hero({ heroRef, reduceMotion }) {
         </motion.div>
       </div>
 
+      <div className="creative-mantra" aria-hidden="true">THINK<br />MAKE<br />CREATE<span className="side-period">.</span></div>
       <motion.div className="hero-side" {...entrance(0.55)}>
-        <div className="side-label"><span /> <p>THINK<br />MAKE<br />CREATE<span className="side-period">.</span></p></div>
-        <div className="side-stat"><strong>2<span>+</span></strong><p>Years of<br />experience</p></div>
-        <div className="side-stat"><strong>5K<span>+</span></strong><p>Concurrent<br />users handled</p></div>
-        <div className="side-stat"><strong>5<span>+</span></strong><p>Projects<br />delivered</p></div>
+        <span className="side-accent" aria-hidden="true" />
+        <div className="side-stat"><AnimatedStat value={2} reduceMotion={reduceMotion} /><p>Years of<br />experience</p></div>
+        <div className="side-stat"><AnimatedStat value={5000} reduceMotion={reduceMotion} /><p>Concurrent<br />users handled</p></div>
+        <div className="side-stat"><AnimatedStat value={5} reduceMotion={reduceMotion} /><p>Projects<br />delivered</p></div>
       </motion.div>
 
       <a href="#work" className="scroll-cue"><span>SCROLL TO EXPLORE</span><span className="scroll-circle"><ArrowDown size={18} /></span></a>

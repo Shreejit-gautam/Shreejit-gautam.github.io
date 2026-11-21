@@ -417,6 +417,16 @@
 #experience .p-journey-tagline .p-red-rule { width: 45px; height: 5px; margin: 7px 0 0; border-radius: 3px; background: #8f252b; }
 #experience .p-journey-dots { top: 107px; right: 70px; opacity: 1; }
 #experience .p-journey-path { top: 182px; left: calc(50% - 90px); transform: rotate(-139deg) scaleY(-1) scale(.992); }
+#experience .p-journey-path path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+#experience .p-journey.is-timeline-animated .p-timeline-node { opacity: 0; transform: scale(.45); transition: opacity .3s ease, transform .3s ease; }
+#experience .p-journey.is-timeline-animated .p-timeline-node.is-reached { opacity: 1; transform: scale(1); }
+#experience .p-journey.is-timeline-animated .p-timeline-entry .p-timeline-date,
+#experience .p-journey.is-timeline-animated .p-timeline-entry .p-timeline-body { opacity: 0; visibility: hidden; transition: opacity .45s ease, transform .45s ease, visibility 0s linear .45s; }
+#experience .p-journey.is-timeline-animated .p-timeline-entry .p-timeline-body { transform: translateY(14px); }
+#experience .p-journey.is-timeline-animated .p-timeline-entry.is-reached .p-timeline-date,
+#experience .p-journey.is-timeline-animated .p-timeline-entry.is-reached .p-timeline-body { opacity: 1; visibility: visible; transition: opacity .45s ease, transform .45s ease, visibility 0s; }
+#experience .p-journey.is-timeline-animated .p-timeline-entry.is-reached .p-timeline-body { transform: translateY(0); }
+#experience .p-journey.is-timeline-animated .p-timeline-entry:not(.is-reached) .p-timeline-trigger { visibility: hidden; pointer-events: none; }
 
 #experience .p-timeline-entry { position: relative; display: block; align-self: start; min-width: 0; margin: 0; padding: 0; border: 0; }
 #experience .p-timeline-entry-1 { grid-column: 87 / 132; grid-row: 3 / 5; margin-left: 5px; }

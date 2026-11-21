@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="none" overflow="visible" width="502" height="527" viewBox="0 0 502 527" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <mask id="orbit-mask" fill="white"><path d="M502 263.5C502 409.027 389.623 527 251 527C112.377 527 0 409.027 0 263.5C0 117.973 112.377 0 251 0C389.623 0 502 117.973 502 263.5Z"/></mask>
+  <ellipse cx="251" cy="263.5" rx="251" ry="263.5" stroke-width="2" stroke="url(#orbit-gradient)" mask="url(#orbit-mask)"/>
+  <circle cx="471" cy="136.6" r="6" fill="#B64046"/>
+  <defs><linearGradient id="orbit-gradient" x1="-41.5" y1="367.5" x2="414.347" y2="67.043" gradientUnits="userSpaceOnUse"><stop stop-color="#B64046" stop-opacity="0"/><stop offset="1" stop-color="#501C1F"/></linearGradient></defs>
+</svg>
