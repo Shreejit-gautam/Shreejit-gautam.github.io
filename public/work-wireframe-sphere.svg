@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" fill="none">
+  <defs>
+    <clipPath id="globe"><circle cx="200" cy="200" r="184"/></clipPath>
+    <radialGradient id="shade" cx="38%" cy="28%" r="72%"><stop stop-color="#11140C" stop-opacity=".72"/><stop offset=".7" stop-color="#0D100A" stop-opacity=".6"/><stop offset="1" stop-color="#191919" stop-opacity="0"/></radialGradient>
+    <linearGradient id="mesh" x1="60" y1="35" x2="325" y2="375" gradientUnits="userSpaceOnUse"><stop stop-color="#A9C82B" stop-opacity=".53"/><stop offset=".56" stop-color="#819B20" stop-opacity=".35"/><stop offset="1" stop-color="#49581A" stop-opacity=".07"/></linearGradient>
+  </defs>
+  <circle cx="200" cy="200" r="184" fill="url(#shade)" stroke="#829B20" stroke-opacity=".35" stroke-width="1.2"/>
+  <g clip-path="url(#globe)" stroke="url(#mesh)" stroke-width=".85">
+    <ellipse cx="200" cy="378.03" rx="24.02" ry="5.24"/>
+    <ellipse cx="200" cy="373.45" rx="47.62" ry="10.39"/>
+    <ellipse cx="200" cy="365.90" rx="70.41" ry="15.37"/>
+    <ellipse cx="200" cy="355.51" rx="92.00" ry="20.08"/>
+    <ellipse cx="200" cy="342.46" rx="112.01" ry="24.44"/>
+    <ellipse cx="200" cy="326.97" rx="130.11" ry="28.39"/>
+    <ellipse cx="200" cy="309.31" rx="145.98" ry="31.86"/>
+    <ellipse cx="200" cy="289.78" rx="159.35" ry="34.77"/>
+    <ellipse cx="200" cy="268.72" rx="169.99" ry="37.10"/>
+    <ellipse cx="200" cy="246.47" rx="177.73" ry="38.79"/>
+    <ellipse cx="200" cy="223.44" rx="182.43" ry="39.81"/>
+    <ellipse cx="200" cy="200.00" rx="184.00" ry="40.15"/>
+    <ellipse cx="200" cy="176.56" rx="182.43" ry="39.81"/>
+    <ellipse cx="200" cy="153.53" rx="177.73" ry="38.79"/>
+    <ellipse cx="200" cy="131.28" rx="169.99" ry="37.10"/>
+    <ellipse cx="200" cy="110.22" rx="159.35" ry="34.77"/>
+    <ellipse cx="200" cy="90.69" rx="145.98" ry="31.86"/>
+    <ellipse cx="200" cy="73.03" rx="130.11" ry="28.39"/>
+    <ellipse cx="200" cy="57.54" rx="112.01" ry="24.44"/>
+    <ellipse cx="200" cy="44.49" rx="92.00" ry="20.08"/>
+    <ellipse cx="200" cy="34.10" rx="70.41" ry="15.37"/>
+    <ellipse cx="200" cy="26.55" rx="47.62" ry="10.39"/>
+    <ellipse cx="200" cy="21.97" rx="24.02" ry="5.24"/>
+    <ellipse cx="200" cy="200" rx="16.04" ry="184"/>
+    <ellipse cx="200" cy="200" rx="31.95" ry="184"/>
+    <ellipse cx="200" cy="200" rx="47.62" ry="184"/>
+    <ellipse cx="200" cy="200" rx="62.93" ry="184"/>
+    <ellipse cx="200" cy="200" rx="77.76" ry="184"/>
+    <ellipse cx="200" cy="200" rx="92.00" ry="184"/>
+    <ellipse cx="200" cy="200" rx="105.54" ry="184"/>
+    <ellipse cx="200" cy="200" rx="118.27" ry="184"/>
+    <ellipse cx="200" cy="200" rx="130.11" ry="184"/>
+    <ellipse cx="200" cy="200" rx="140.95" ry="184"/>
+    <ellipse cx="200" cy="200" rx="150.72" ry="184"/>
+    <ellipse cx="200" cy="200" rx="159.35" ry="184"/>
+    <ellipse cx="200" cy="200" rx="166.76" ry="184"/>
+    <ellipse cx="200" cy="200" rx="172.90" ry="184"/>
+    <ellipse cx="200" cy="200" rx="177.73" ry="184"/>
+    <ellipse cx="200" cy="200" rx="181.20" ry="184"/>
+    <ellipse cx="200" cy="200" rx="183.30" ry="184"/>
+  </g>
+</svg>

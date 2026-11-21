@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="550" height="290" viewBox="0 0 550 290" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="stroke0_0_25" fill="white">
+<path d="M550 145C550 225.081 426.878 290 275 290C123.122 290 0 225.081 0 145C0 64.9187 123.122 0 275 0C426.878 0 550 64.9187 550 145Z"/>
+</mask>
+<ellipse id="Orbital curve" opacity="0.38" cx="275" cy="145" rx="275" ry="145" stroke-width="2" stroke="#8F252B" mask="url(#stroke0_0_25)"/>
+</svg>

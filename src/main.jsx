@@ -7,8 +7,8 @@ import '@fontsource/dm-sans/600.css'
 import '@fontsource/dm-sans/700.css'
 import '@fontsource/space-mono/400.css'
 import './index.css'
-import App from './App.jsx'
+import PortfolioRouter from './PortfolioRouter.jsx'
 
 createRoot(document.getElementById('root')).render(
-  <React.StrictMode><App /></React.StrictMode>,
+  <React.StrictMode><PortfolioRouter /></React.StrictMode>,
 )
