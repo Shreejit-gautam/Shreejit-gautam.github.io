@@ -106,7 +106,7 @@ function BrandMark() {
 }
 
 function HeaderAction({ contact = false, onContactClick }) {
-  const downloadResume = !contact && getSiteHostname() === 'shreejitgautam.com.np'
+  const downloadResume = !contact && getSiteHostname() === 'shreejit.me'
   const href = contact ? '#contact' : downloadResume ? '/Shreejit_Gtm.pdf' : '/shreejit-gautam-cv.pdf'
   return <a className="header-cta" href={href} download={downloadResume ? 'Shreejit_Gtm.pdf' : undefined} target={!contact && !downloadResume ? '_blank' : undefined} rel={!contact && !downloadResume ? 'noreferrer' : undefined} onClick={contact ? onContactClick : undefined}>
     {contact ? <>Let’s Talk <ArrowUpRight size={16} strokeWidth={2} /></> : <><Download size={16} strokeWidth={2} /> Resume</>}

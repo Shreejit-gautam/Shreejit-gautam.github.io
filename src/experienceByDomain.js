@@ -1,7 +1,7 @@
 import { normalizeHostname } from './siteDomain.js'
 
 const prismExperienceByDomain = {
-  'shreejit.me': {
+  'shreejitgautam.com.np': {
     role: 'Fullstack and GenAI Engineer',
     company: 'Prism Lab Pvt. Ltd.',
     technologiesFirst: true,
@@ -52,7 +52,7 @@ const prismExperienceByDomain = {
       },
     ],
   },
-  'shreejitgautam.com.np': {
+  'shreejit.me': {
     role: 'Fullstack',
     company: 'Prism Lab Pvt. Ltd.',
     technologiesFirst: true,
