@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import gsap from 'gsap'
+import { getSiteHostname } from './siteDomain.js'
 import {
   ArrowDown, ArrowUpRight, Award, BrainCircuit, Calendar, CheckCircle2, ChevronLeft,
   ChevronRight, Code2, Download, Github, Instagram,
@@ -104,23 +105,30 @@ function BrandMark() {
   return <a className="monogram" href="#home" aria-label="Shreejit Gautam, back to home"><span>S</span><i>/</i><span>G</span></a>
 }
 
-function ResumeLink() {
-  return <a className="header-cta" href="/shreejit-gautam-cv.pdf" target="_blank" rel="noreferrer"><Download size={16} strokeWidth={2} /> Resume</a>
+function HeaderAction({ contact = false, onContactClick }) {
+  const downloadResume = !contact && getSiteHostname() === 'shreejitgautam.com.np'
+  const href = contact ? '#contact' : downloadResume ? '/Shreejit_Gtm.pdf' : '/shreejit-gautam-cv.pdf'
+  return <a className="header-cta" href={href} download={downloadResume ? 'Shreejit_Gtm.pdf' : undefined} target={!contact && !downloadResume ? '_blank' : undefined} rel={!contact && !downloadResume ? 'noreferrer' : undefined} onClick={contact ? onContactClick : undefined}>
+    {contact ? <>Let’s Talk <ArrowUpRight size={16} strokeWidth={2} /></> : <><Download size={16} strokeWidth={2} /> Resume</>}
+  </a>
 }
 
 export function Header({ active, menuOpen, setMenuOpen }) {
   const [visible, setVisible] = useState(false)
   const [darkBackground, setDarkBackground] = useState(false)
+  const [pastHero, setPastHero] = useState(false)
   const headerRef = useRef(null)
 
   useEffect(() => {
     let hideTimer
-    const updateTheme = () => {
+    const updateHeader = () => {
       const section = [...document.querySelectorAll('main > section')].find(element => {
         const rect = element.getBoundingClientRect()
         return rect.top <= 36 && rect.bottom > 36
       })
       setDarkBackground(section?.id === 'work' || section?.id === 'events' || section?.id === 'contact')
+      const hero = document.getElementById('home')
+      setPastHero(Boolean(hero && hero.getBoundingClientRect().bottom <= 0))
     }
     const scheduleHide = () => {
       window.clearTimeout(hideTimer)
@@ -128,17 +136,17 @@ export function Header({ active, menuOpen, setMenuOpen }) {
         if (!menuOpen && !headerRef.current?.contains(document.activeElement) && !document.activeElement?.classList.contains('nav-reveal')) setVisible(false)
       }, 2200)
     }
-    const handleScroll = () => { updateTheme(); setVisible(true); scheduleHide() }
+    const handleScroll = () => { updateHeader(); setVisible(true); scheduleHide() }
     const handleFocusOut = () => scheduleHide()
-    updateTheme()
+    updateHeader()
     if (!menuOpen) scheduleHide()
     window.addEventListener('scroll', handleScroll, { passive: true })
-    window.addEventListener('resize', updateTheme)
+    window.addEventListener('resize', updateHeader)
     document.addEventListener('focusout', handleFocusOut)
     return () => {
       window.clearTimeout(hideTimer)
       window.removeEventListener('scroll', handleScroll)
-      window.removeEventListener('resize', updateTheme)
+      window.removeEventListener('resize', updateHeader)
       document.removeEventListener('focusout', handleFocusOut)
     }
   }, [menuOpen])
@@ -156,7 +164,7 @@ export function Header({ active, menuOpen, setMenuOpen }) {
           </a>
         ))}
       </nav>
-      <ResumeLink />
+      <HeaderAction contact={pastHero} onContactClick={() => setMenuOpen(false)} />
       <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="main-navigation" aria-label={menuOpen ? 'Close menu' : 'Open menu'}>
         {menuOpen ? <X size={23} /> : <Menu size={23} />}
       </button>
@@ -243,10 +251,10 @@ function AnimatedStat({ value, reduceMotion }) {
   return <strong ref={statRef}><span className="sr-only">{accessibleValue}</span><span className="stat-value" aria-hidden="true">{display}</span><span aria-hidden="true">+</span></strong>
 }
 
-function Hero({ heroRef, reduceMotion }) {
+function Hero({ heroRef, reduceMotion, introComplete = true }) {
   const entrance = (delay = 0, y = 24) => reduceMotion ? {} : {
     initial: { opacity: 0, y },
-    animate: { opacity: 1, y: 0 },
+    animate: introComplete ? { opacity: 1, y: 0 } : { opacity: 0, y },
     transition: { duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] },
   }
   return (
@@ -254,13 +262,13 @@ function Hero({ heroRef, reduceMotion }) {
       <div className="hero-identity">
         <BrandMark />
         <div className="header-rule" aria-hidden="true"><span>PORTFOLIO / 2026</span></div>
-        <ResumeLink />
+        <HeaderAction />
       </div>
       <div className="hero-grid" aria-hidden="true">
-        <img src="/figma-hero/hero-grid.svg" alt="" className="hero-grid-svg" />
+        <img src="/figma-hero/hero-grid.svg" alt="" className="hero-grid-svg" loading="eager" decoding="async" />
       </div>
       <div className="corner-arc" aria-hidden="true">
-        <img src={reduceMotion ? '/figma-hero/corner-arc-static.svg' : '/figma-hero/corner-arc.svg'} alt="" />
+        <img src={reduceMotion ? '/figma-hero/corner-arc-static.svg' : '/figma-hero/corner-arc.svg'} alt="" loading="eager" decoding="async" />
       </div>
 
       <motion.div className="hero-topline" {...entrance(0.05)}>
@@ -271,13 +279,13 @@ function Hero({ heroRef, reduceMotion }) {
       </motion.div>
 
       <div className="hero-art absolute inset-0 pointer-events-none" aria-hidden="true">
-        <img className="hero-fine-orbit" src={reduceMotion ? '/figma-hero/fine-orbit-static.svg' : '/figma-hero/fine-orbit.svg'} alt="" />
-        <img className="hero-lower-orbit" src={reduceMotion ? '/figma-hero/lower-orbit-static.svg' : '/figma-hero/lower-orbit.svg'} alt="" />
+        <img className="hero-fine-orbit" src={reduceMotion ? '/figma-hero/fine-orbit-static.svg' : '/figma-hero/fine-orbit.svg'} alt="" loading="eager" decoding="async" />
+        <img className="hero-lower-orbit" src={reduceMotion ? '/figma-hero/lower-orbit-static.svg' : '/figma-hero/lower-orbit.svg'} alt="" loading="eager" decoding="async" />
         <div className="orbit-cross">+</div>
-        <img className="art-sphere" src="/figma-hero/sphere-3d.svg" data-parallax="sphere" alt="" />
-        <img className="art-dots" src="/figma-hero/dot-grid.svg" alt="" />
-        <img className="art-index" src="/figma-hero/art-index.svg" alt="FIG. 01 — CREATIVE IN MOTION" />
-        <div className="hero-ground-frame"><img className="hero-ground" src="/figma-hero/ground.svg" alt="" /></div>
+        <img className="art-sphere" src="/figma-hero/sphere-3d.svg" data-parallax="sphere" alt="" loading="eager" decoding="async" />
+        <img className="art-dots" src="/figma-hero/dot-grid.svg" alt="" loading="eager" decoding="async" />
+        <img className="art-index" src="/figma-hero/art-index.svg" alt="FIG. 01 — CREATIVE IN MOTION" loading="eager" decoding="async" />
+        <div className="hero-ground-frame"><img className="hero-ground" src="/figma-hero/ground.svg" alt="" loading="eager" decoding="async" /></div>
       </div>
 
       <motion.div className="name-block" {...entrance(0.12, 38)}>
@@ -285,17 +293,17 @@ function Hero({ heroRef, reduceMotion }) {
           <span className="name-shreejit">SHREEJIT</span>
           <span className="name-gautam-row">
             <span className="name-gautam">GAUTAM</span>
-            <img className="name-swoosh" src="/figma-hero/swoosh.svg" alt="" />
+            <img className="name-swoosh" src="/figma-hero/swoosh.svg" alt="" loading="eager" decoding="async" />
           </span>
         </h1>
       </motion.div>
 
       <div className="portrait-mask" aria-hidden="true">
-        <img className="portrait-echo portrait-echo-far" src="/figma-hero/portrait-echo.png" alt="" />
-        <img className="portrait-echo portrait-echo-near" src="/figma-hero/portrait-echo.png" alt="" />
+        <img className="portrait-echo portrait-echo-far" src="/figma-hero/portrait-echo.png" alt="" loading="eager" decoding="async" />
+        <img className="portrait-echo portrait-echo-near" src="/figma-hero/portrait-echo.png" alt="" loading="eager" decoding="async" />
       </div>
       <motion.div className="portrait-wrap" {...entrance(0.18, 35)}>
-        <img className="portrait" src="/figma-hero/portrait.png" alt="Shreejit Gautam wearing a burgundy shirt" />
+        <img className="portrait" src="/figma-hero/portrait.png" alt="Shreejit Gautam wearing a burgundy shirt" loading="eager" fetchpriority="high" decoding="async" />
       </motion.div>
 
       <div className="hero-copy">
@@ -353,6 +361,7 @@ export const eventsData = [
   {
     id: 'mbmc-ideax-2024',
     number: '01',
+    category: 'Winner · Agrotech',
     badge: 'Track Winner · Agrotech',
     badgeType: 'winner',
     theme: 'Agriculture & Technology',
@@ -394,6 +403,7 @@ export const eventsData = [
   {
     id: 'open-data-week-2024',
     number: '02',
+    category: 'Runner-Up · Datathon',
     badge: 'Third Runner-Up · Datathon',
     badgeType: 'winner',
     theme: 'Open Data & Civic Innovation',
@@ -429,6 +439,7 @@ export const eventsData = [
   {
     id: 'nasa-spaceapps-2024',
     number: '03',
+    category: 'NASA Hackathon',
     badge: 'NASA Space Apps · 36-Hr Hackathon',
     badgeType: 'hackathon',
     theme: 'Space Science & Planetary Problem Solving',
@@ -470,11 +481,9 @@ export const eventsData = [
 ]
 
 function Events() {
-  const [activePhotoIndices, setActivePhotoIndices] = useState(() =>
-    eventsData.reduce((acc, ev) => ({ ...acc, [ev.id]: 0 }), {})
-  )
   const [activeSlide, setActiveSlide] = useState(0)
-  const [lightbox, setLightbox] = useState(null)
+  const [selectedEvent, setSelectedEvent] = useState(null)
+  const [modalPhotoIndex, setModalPhotoIndex] = useState(0)
   const scrollTrackRef = useRef(null)
 
   const scrollToSlide = (index) => {
@@ -516,43 +525,83 @@ function Events() {
       })
     }
 
+    // Drag-to-scroll support for desktop & mouse users
+    let isDown = false
+    let startX = 0
+    let scrollLeft = 0
+
+    const handleMouseDown = (e) => {
+      if (e.button !== 0) return
+      if (
+        e.target.closest('button') ||
+        e.target.closest('a') ||
+        e.target.closest('.event-card-circle-btn')
+      )
+        return
+      isDown = true
+      startX = e.pageX - track.offsetLeft
+      scrollLeft = track.scrollLeft
+      track.classList.add('is-dragging')
+    }
+
+    const handleMouseMove = (e) => {
+      if (!isDown) return
+      e.preventDefault()
+      const x = e.pageX - track.offsetLeft
+      const walk = (x - startX) * 1.35
+      track.scrollLeft = scrollLeft - walk
+    }
+
+    const handleMouseUp = () => {
+      if (!isDown) return
+      isDown = false
+      track.classList.remove('is-dragging')
+    }
+
     track.addEventListener('scroll', handleScroll, { passive: true })
+    track.addEventListener('mousedown', handleMouseDown)
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseup', handleMouseUp)
+
     return () => {
       track.removeEventListener('scroll', handleScroll)
+      track.removeEventListener('mousedown', handleMouseDown)
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
       if (timeoutId) cancelAnimationFrame(timeoutId)
     }
   }, [])
 
+  // Lock body scroll and handle Escape key when detail popup is active
   useEffect(() => {
-    if (!lightbox) return undefined
+    if (!selectedEvent) return undefined
+
+    const originalOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        setLightbox(null)
+        setSelectedEvent(null)
       } else if (e.key === 'ArrowRight') {
-        setLightbox((prev) => {
-          if (!prev) return null
-          const ev = eventsData.find((item) => item.id === prev.eventId)
-          if (!ev) return prev
-          return { ...prev, photoIndex: (prev.photoIndex + 1) % ev.photos.length }
-        })
+        setModalPhotoIndex((prev) => (prev + 1) % selectedEvent.photos.length)
       } else if (e.key === 'ArrowLeft') {
-        setLightbox((prev) => {
-          if (!prev) return null
-          const ev = eventsData.find((item) => item.id === prev.eventId)
-          if (!ev) return prev
-          return {
-            ...prev,
-            photoIndex: (prev.photoIndex - 1 + ev.photos.length) % ev.photos.length,
-          }
-        })
+        setModalPhotoIndex(
+          (prev) => (prev - 1 + selectedEvent.photos.length) % selectedEvent.photos.length
+        )
       }
     }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [lightbox])
 
-  const activeEvent = lightbox ? eventsData.find((item) => item.id === lightbox.eventId) : null
-  const activePhoto = activeEvent ? activeEvent.photos[lightbox.photoIndex] : null
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = originalOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [selectedEvent])
+
+  const openEventDetails = (event) => {
+    setSelectedEvent(event)
+    setModalPhotoIndex(0)
+  }
 
   return (
     <section id="events" className="content-section events-section" aria-labelledby="events-heading">
@@ -619,117 +668,64 @@ function Events() {
           className="events-track"
           tabIndex={0}
           role="region"
-          aria-label="Events sideways scrollable list"
+          aria-label="Events sideways scrollable card carousel"
         >
-          {eventsData.map((event, eventIndex) => {
-            const currentPhotoIndex = activePhotoIndices[event.id] ?? 0
-            const currentPhoto = event.photos[currentPhotoIndex]
+          {eventsData.map((event, eventIndex) => (
+            <div key={event.id} className="events-slide" data-index={eventIndex}>
+              <article
+                className="event-image-card"
+                onClick={() => openEventDetails(event)}
+                role="button"
+                tabIndex={0}
+                aria-label={`View details for ${event.title}`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    openEventDetails(event)
+                  }
+                }}
+              >
+                <img
+                  src={event.photos[0].src}
+                  alt={event.title}
+                  className="event-card-bg-img"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div className="event-card-base-gradient" />
+                <div className="event-card-theme-overlay" />
 
-            return (
-              <div key={event.id} className="events-slide" data-index={eventIndex}>
-                <article className="event-card">
-                  <div className="event-info">
-                    <div className="event-topline">
-                      <span className="event-number">{event.number}</span>
-                      <span className={`event-badge ${event.badgeType}`}>
-                        {event.badgeType === 'winner' ? (
-                          <Trophy size={13} strokeWidth={2.2} />
-                        ) : (
-                          <Sparkles size={13} strokeWidth={2.2} />
-                        )}
-                        {event.badge}
-                      </span>
-                    </div>
+                <div className="event-card-topbar">
+                  <span className="event-card-badge">{event.category}</span>
+                  <span className="event-card-circle-btn" aria-label="Open event details">
+                    <ArrowUpRight size={18} strokeWidth={2.4} />
+                  </span>
+                </div>
 
-                    <h3 className="event-title">{event.title}</h3>
-                    <p className="event-subtitle">{event.subtitle}</p>
-
-                    <div className="event-meta-chips">
-                      <span className="event-meta-chip">
-                        <Calendar size={13} strokeWidth={1.8} />
-                        {event.dates}
-                      </span>
-                      <span className="event-meta-chip">
-                        <MapPin size={13} strokeWidth={1.8} />
-                        {event.location}
-                      </span>
-                      <span className="event-meta-chip">
-                        <Users size={13} strokeWidth={1.8} />
-                        {event.team}
-                      </span>
-                      <span className="event-meta-chip highlight">
-                        <Award size={13} strokeWidth={1.8} />
-                        {event.prize}
-                      </span>
-                    </div>
-
-                    <p className="event-description">{event.description}</p>
-
-                    <div className="event-highlights">
-                      <h4 className="event-highlights-title">Key Highlights</h4>
-                      {event.highlights.map((point, i) => (
-                        <div key={i} className="event-highlight-item">
-                          <CheckCircle2 size={16} strokeWidth={2} className="event-highlight-icon" />
-                          <span>{point}</span>
-                        </div>
-                      ))}
-                    </div>
+                <div className="event-card-bottom-info">
+                  <div className="event-card-date">
+                    <Calendar size={13} strokeWidth={2} />
+                    <span>{event.dates}</span>
                   </div>
-
-                  <div className="event-media">
-                    <div
-                      className="event-gallery-main"
-                      onClick={() => setLightbox({ eventId: event.id, photoIndex: currentPhotoIndex })}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`Open full view of ${currentPhoto.title}`}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          setLightbox({ eventId: event.id, photoIndex: currentPhotoIndex })
-                        }
-                      }}
-                    >
-                      <img src={currentPhoto.src} alt={currentPhoto.title} loading="lazy" />
-                      <div className="event-gallery-overlay">
-                        <span className="event-gallery-zoom">
-                          <Maximize2 size={13} strokeWidth={2} /> Full View
-                        </span>
-                        <div className="event-gallery-caption">
-                          <strong>{currentPhoto.title}</strong>
-                          <p>{currentPhoto.caption}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="event-gallery-thumbs" role="tablist" aria-label="Event photos">
-                      {event.photos.map((photo, pIdx) => (
-                        <button
-                          key={photo.src}
-                          type="button"
-                          role="tab"
-                          aria-selected={currentPhotoIndex === pIdx}
-                          className={`event-gallery-thumb ${currentPhotoIndex === pIdx ? 'is-active' : ''}`}
-                          onClick={() =>
-                            setActivePhotoIndices((prev) => ({ ...prev, [event.id]: pIdx }))
-                          }
-                        >
-                          <div className="event-gallery-thumb-img">
-                            <img src={photo.src} alt={photo.label} loading="lazy" />
-                          </div>
-                          <span className="event-gallery-thumb-label">{photo.label}</span>
-                        </button>
-                      ))}
-                    </div>
+                  <h3 className="event-card-title">{event.title}</h3>
+                  <p className="event-card-subtitle">{event.subtitle}</p>
+                  <div className="event-card-meta-row">
+                    <span className="event-card-prize-badge">
+                      <Award size={13} strokeWidth={2} />
+                      {event.prize.split(' & ')[0]}
+                    </span>
+                    <span className="event-card-photos-count">
+                      <Maximize2 size={12} strokeWidth={2} /> {event.photos.length} Photos
+                    </span>
                   </div>
-                </article>
-              </div>
-            )
-          })}
+                </div>
+              </article>
+            </div>
+          ))}
         </div>
 
         <div className="events-slider-bottom">
           <div className="events-slider-hint">
-            <span>← SCROLL OR DRAG SIDEWAYS →</span>
+            <span>← SCROLL OR DRAG SIDEWAYS TO EXPLORE →</span>
           </div>
           <div className="events-slider-dots">
             {eventsData.map((ev, i) => (
@@ -745,70 +741,96 @@ function Events() {
         </div>
       </div>
 
-      {lightbox && activePhoto && (
+      {selectedEvent && (
         <div
-          className="event-lightbox"
+          className="event-modal-backdrop"
+          onClick={() => setSelectedEvent(null)}
           role="dialog"
           aria-modal="true"
-          aria-label={activePhoto.title}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setLightbox(null)
-          }}
+          aria-label={`${selectedEvent.title} Full Details`}
         >
-          <div className="event-lightbox-dialog">
-            <div className="event-lightbox-topbar">
-              <span className="event-lightbox-counter">
-                {activeEvent?.title} · Photo {lightbox.photoIndex + 1} of {activeEvent?.photos.length}
-              </span>
+          <div className="event-modal-window" onClick={(e) => e.stopPropagation()}>
+            <div className="event-modal-header">
+              <div className="event-modal-badge-group">
+                <span className="event-modal-num">{selectedEvent.number}</span>
+                <span className="event-modal-category">{selectedEvent.category}</span>
+              </div>
               <button
                 type="button"
-                className="event-lightbox-close"
-                onClick={() => setLightbox(null)}
-                aria-label="Close full view"
+                className="event-modal-close"
+                onClick={() => setSelectedEvent(null)}
+                aria-label="Close modal"
               >
-                <X size={20} strokeWidth={2} />
+                <X size={20} strokeWidth={2.2} />
               </button>
             </div>
 
-            <div className="event-lightbox-img-wrap">
-              <img src={activePhoto.src} alt={activePhoto.title} />
-              {activeEvent && activeEvent.photos.length > 1 && (
-                <>
+            <div className="event-modal-gallery">
+              <div className="event-modal-main-img-wrap">
+                <img
+                  src={selectedEvent.photos[modalPhotoIndex].src}
+                  alt={selectedEvent.photos[modalPhotoIndex].title}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div className="event-modal-img-caption">
+                  <strong>{selectedEvent.photos[modalPhotoIndex].title}</strong>
+                  <p>{selectedEvent.photos[modalPhotoIndex].caption}</p>
+                </div>
+              </div>
+
+              <div className="event-modal-thumbnails">
+                {selectedEvent.photos.map((photo, pIdx) => (
                   <button
+                    key={photo.src}
                     type="button"
-                    className="event-lightbox-nav prev"
-                    onClick={() =>
-                      setLightbox((prev) => ({
-                        ...prev,
-                        photoIndex:
-                          (prev.photoIndex - 1 + activeEvent.photos.length) %
-                          activeEvent.photos.length,
-                      }))
-                    }
-                    aria-label="Previous photo"
+                    className={`event-modal-thumb ${modalPhotoIndex === pIdx ? 'is-active' : ''}`}
+                    onClick={() => setModalPhotoIndex(pIdx)}
                   >
-                    <ChevronLeft size={24} />
+                    <img src={photo.src} alt={photo.label} loading="lazy" decoding="async" />
+                    <span>{photo.label}</span>
                   </button>
-                  <button
-                    type="button"
-                    className="event-lightbox-nav next"
-                    onClick={() =>
-                      setLightbox((prev) => ({
-                        ...prev,
-                        photoIndex: (prev.photoIndex + 1) % activeEvent.photos.length,
-                      }))
-                    }
-                    aria-label="Next photo"
-                  >
-                    <ChevronRight size={24} />
-                  </button>
-                </>
-              )}
+                ))}
+              </div>
             </div>
 
-            <div className="event-lightbox-bottombar">
-              <strong>{activePhoto.title}</strong>
-              <p>{activePhoto.caption}</p>
+            <div className="event-modal-body">
+              <h3 className="event-modal-title">{selectedEvent.title}</h3>
+              <p className="event-modal-subtitle">{selectedEvent.subtitle}</p>
+              <p className="event-modal-organizer">{selectedEvent.organizer}</p>
+
+              <div className="event-modal-chips">
+                <span className="event-modal-chip">
+                  <Calendar size={13} strokeWidth={1.8} />
+                  {selectedEvent.dates}
+                </span>
+                <span className="event-modal-chip">
+                  <MapPin size={13} strokeWidth={1.8} />
+                  {selectedEvent.location}
+                </span>
+                <span className="event-modal-chip">
+                  <Users size={13} strokeWidth={1.8} />
+                  {selectedEvent.team}
+                </span>
+                <span className="event-modal-chip highlight">
+                  <Award size={13} strokeWidth={1.8} />
+                  {selectedEvent.prize}
+                </span>
+              </div>
+
+              <div className="event-modal-description">
+                <p>{selectedEvent.description}</p>
+              </div>
+
+              <div className="event-modal-highlights">
+                <h4>Key Highlights</h4>
+                {selectedEvent.highlights.map((point, i) => (
+                  <div key={i} className="event-modal-highlight-item">
+                    <CheckCircle2 size={16} strokeWidth={2} />
+                    <span>{point}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -839,9 +861,121 @@ function Contact() {
   )
 }
 
+const CRITICAL_PRELOAD_ASSETS = [
+  '/figma-hero/portrait.png',
+  '/figma-hero/portrait-echo.png',
+  '/figma-hero/grain.png',
+  '/figma-hero/hero-grid.svg',
+  '/figma-hero/corner-arc.svg',
+  '/events/mbmc-ideax-2024-stage.jpg',
+  '/events/open-data-week-ceremony.jpg',
+  '/events/nasa-spaceapps-team.jpg',
+]
+
+function IntroAnimation({ onComplete, reduceMotion }) {
+  const [progress, setProgress] = useState(0)
+  const [isExiting, setIsExiting] = useState(false)
+  const [isRemoved, setIsRemoved] = useState(false)
+
+  useEffect(() => {
+    if (reduceMotion) {
+      onComplete()
+      setIsRemoved(true)
+      return undefined
+    }
+
+    const originalOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    // Preload critical assets in parallel
+    const preloadPromise = Promise.all(
+      CRITICAL_PRELOAD_ASSETS.map(
+        (src) =>
+          new Promise((resolve) => {
+            const img = new Image()
+            img.onload = img.onerror = resolve
+            img.src = src
+          })
+      )
+    )
+
+    // Smooth counter animation up to ~100%
+    const startTime = performance.now()
+    const duration = 750
+    let rafId
+
+    const updateProgress = (now) => {
+      const elapsed = now - startTime
+      const current = Math.min(100, Math.round((elapsed / duration) * 100))
+      setProgress(current)
+      if (elapsed < duration) {
+        rafId = requestAnimationFrame(updateProgress)
+      }
+    }
+    rafId = requestAnimationFrame(updateProgress)
+
+    // Ensure intro displays for ~800ms before triggering curtain exit
+    const minTimer = new Promise((resolve) => setTimeout(resolve, 800))
+
+    Promise.all([preloadPromise, minTimer]).then(() => {
+      setProgress(100)
+      setIsExiting(true)
+
+      // Curtain slides up; trigger smooth page reveal at ~1000ms
+      setTimeout(() => {
+        onComplete()
+        document.body.style.overflow = originalOverflow
+      }, 250)
+
+      // Remove intro from DOM after curtain is completely gone
+      setTimeout(() => {
+        setIsRemoved(true)
+      }, 750)
+    })
+
+    return () => {
+      cancelAnimationFrame(rafId)
+      document.body.style.overflow = originalOverflow
+    }
+  }, [reduceMotion, onComplete])
+
+  if (isRemoved || reduceMotion) return null
+
+  return (
+    <div
+      className={`intro-curtain ${isExiting ? 'is-exiting' : ''}`}
+      aria-hidden="true"
+      role="presentation"
+    >
+      <div className="intro-content">
+        <div className="intro-monogram">
+          <span className="intro-monogram-s">S</span>
+          <span className="intro-monogram-slash">/</span>
+          <span className="intro-monogram-g">G</span>
+        </div>
+
+        <div className="intro-meta">
+          <span className="intro-name">SHREEJIT GAUTAM</span>
+          <span className="intro-tagline">PORTFOLIO / 2026</span>
+        </div>
+
+        <div className="intro-progress-bar">
+          <div className="intro-progress-fill" style={{ width: `${progress}%` }} />
+        </div>
+
+        <div className="intro-counter">
+          <span>{progress}</span>
+          <span className="intro-percent">%</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function App({ workSection, experienceSection } = {}) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [active, setActive] = useState('home')
+  const [introComplete, setIntroComplete] = useState(false)
   const heroRef = useRef(null)
   const reduceMotion = useReducedMotion()
 
@@ -881,17 +1015,23 @@ export default function App({ workSection, experienceSection } = {}) {
   }, [reduceMotion])
 
   return (
-    <div className="site-shell overflow-hidden">
-      <a className="skip-link" href="#main">Skip to content</a>
-      <Header active={active} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-      <SocialRail />
-      <main id="main">
-        <Hero heroRef={heroRef} reduceMotion={reduceMotion} />
-        {workSection || <Work />}
-        {experienceSection || <Experience />}
-        <Events />
-        <Contact />
-      </main>
-    </div>
+    <>
+      <IntroAnimation
+        onComplete={() => setIntroComplete(true)}
+        reduceMotion={reduceMotion}
+      />
+      <div className={`site-shell overflow-hidden ${introComplete ? 'is-revealed' : 'is-loading'}`}>
+        <a className="skip-link" href="#main">Skip to content</a>
+        <Header active={active} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        <SocialRail />
+        <main id="main">
+          <Hero heroRef={heroRef} reduceMotion={reduceMotion} introComplete={introComplete} />
+          {workSection || <Work />}
+          {experienceSection || <Experience />}
+          <Events />
+          <Contact />
+        </main>
+      </div>
+    </>
   )
 }

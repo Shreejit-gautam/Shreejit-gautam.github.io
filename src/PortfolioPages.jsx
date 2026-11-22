@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { experience } from './App.jsx'
 import { getPrismExperienceForDomain } from './experienceByDomain.js'
+import { getSiteHostname } from './siteDomain.js'
 import './portfolio-pages.css'
 
 const projects = [
@@ -248,7 +249,7 @@ function ProjectCard({ project, index, featured = false, total, onOpen }) {
   const reduced = useReducedMotion()
   return <motion.article layout={!reduced} initial={reduced ? false : { opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={reduced ? undefined : { opacity: 0, y: -10 }} transition={{ duration: reduced ? 0 : 0.35 }} className={'p-project ' + (featured ? 'p-project-featured' : 'p-project-compact')}>
     <button type="button" className="p-project-image" onClick={() => onOpen(project)} aria-label={'Explore ' + project.title}>
-      <img src={projectCardImages[project.slug]} alt={project.imageAlt} loading={featured ? 'eager' : 'lazy'} />
+      <img src={projectCardImages[project.slug]} alt={project.imageAlt} loading={featured ? 'eager' : 'lazy'} decoding="async" />
     </button>
     <div className="p-project-copy">
       <div className="p-project-top"><span>{String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}</span><i /><span className="p-category">{project.category}</span></div>
@@ -449,8 +450,7 @@ export function ExperienceSection() {
   const journeyRef = useRef(null)
   const timelinePathRef = useRef(null)
   const reduceMotion = useReducedMotion()
-  const previewDomain = import.meta.env.DEV && new URLSearchParams(window.location.search).get('previewDomain')
-  const domainExperience = getPrismExperienceForDomain(previewDomain || window.location.hostname)
+  const domainExperience = getPrismExperienceForDomain(getSiteHostname())
   const displayedJourney = domainExperience ? [domainExperience, ...journeyEntries.slice(1)] : journeyEntries
   useTimelineDrawing(journeyRef, timelinePathRef, reduceMotion)
   useEffect(() => {

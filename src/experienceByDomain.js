@@ -1,3 +1,5 @@
+import { normalizeHostname } from './siteDomain.js'
+
 const prismExperienceByDomain = {
   'shreejit.me': {
     role: 'Fullstack and GenAI Engineer',
@@ -81,6 +83,6 @@ const prismExperienceByDomain = {
 }
 
 export function getPrismExperienceForDomain(hostname) {
-  const domain = hostname.trim().toLowerCase().replace(/\.$/, '').replace(/^www\./, '')
+  const domain = normalizeHostname(hostname)
   return Object.hasOwn(prismExperienceByDomain, domain) ? prismExperienceByDomain[domain] : null
 }
