@@ -4,18 +4,26 @@ import { ExperienceSection, WorkSection } from './PortfolioPages.jsx'
 
 export default function PortfolioRouter() {
   useEffect(() => {
-    const handleHash = () => {
+    let scrollFrame = 0
+    const handleHash = (initial = false) => {
+      cancelAnimationFrame(scrollFrame)
       const legacySection = window.location.hash.match(/^#\/?(work|experience|about|events)(?:\/.*)?$/)
       if (legacySection) {
         let target = legacySection[1]
         if (target === 'about') target = 'events'
-        window.history.replaceState(null, '', '#' + target)
-        requestAnimationFrame(() => document.getElementById(target)?.scrollIntoView())
+        const canonicalHash = '#' + target
+        const needsNormalization = window.location.hash !== canonicalHash
+        if (needsNormalization) window.history.replaceState(null, '', canonicalHash)
+        if (initial || needsNormalization) scrollFrame = requestAnimationFrame(() => document.getElementById(target)?.scrollIntoView())
       }
     }
-    handleHash()
-    window.addEventListener('hashchange', handleHash)
-    return () => window.removeEventListener('hashchange', handleHash)
+    const handleHashChange = () => handleHash()
+    handleHash(true)
+    window.addEventListener('hashchange', handleHashChange)
+    return () => {
+      cancelAnimationFrame(scrollFrame)
+      window.removeEventListener('hashchange', handleHashChange)
+    }
   }, [])
   return <App workSection={<WorkSection />} experienceSection={<ExperienceSection />} />
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import gsap from 'gsap'
 import { getSiteHostname } from './siteDomain.js'
@@ -359,8 +359,45 @@ function Work() {
 
 export const eventsData = [
   {
-    id: 'mbmc-ideax-2024',
+    id: 'open-data-week-2024',
     number: '01',
+    category: 'Runner-Up · Datathon',
+    badge: 'Third Runner-Up · Datathon',
+    badgeType: 'winner',
+    theme: 'Open Data & Civic Innovation',
+    title: 'Open Data Week 2024',
+    subtitle: 'Open Datathon · Third Runner-Up',
+    organizer: 'Open Data Nepal & Community Partners',
+    dates: 'March 1 – 7, 2024',
+    location: 'Kathmandu, Nepal',
+    team: 'Team TechBug',
+    cardPrize: 'Third Runner up',
+    prize: 'Third Runner-Up · Certificate of Recognition',
+    description:
+      'Secured Third Runner-Up in the Open Data Week 2024 Datathon competing as "Team TechBug". Collaborated with teammates to process, analyze, and extract actionable insights from public civic and governance datasets, building a data-driven prototype presented live to data analysts, domain experts, and the evaluation jury.',
+    highlights: [
+      'Engineered data analytics and visualization workflows from open public datasets with Team TechBug.',
+      'Clinched Third Runner-Up among competitive data science and developer teams.',
+      'Presented findings and live analytical insights before the open data evaluation jury.',
+    ],
+    photos: [
+      {
+        src: '/events/open-data-week-ceremony.jpg',
+        title: 'Stage Award & Certificate Ceremony',
+        label: 'Ceremony & Certificates',
+        caption: 'Team TechBug on stage receiving their certificates and awards at the Open Data Week 2024 Datathon.',
+      },
+      {
+        src: '/events/open-data-week-team.jpg',
+        title: 'Team TechBug at Open Data Week',
+        label: 'Team TechBug',
+        caption: 'Team TechBug (Sanjay Malla, Sudarshan Pokhrel, Subhindra Budhathoki, Shreejit Gautam) at the datathon.',
+      },
+    ],
+  },
+  {
+    id: 'mbmc-ideax-2024',
+    number: '02',
     category: 'Winner · Agrotech',
     badge: 'Track Winner · Agrotech',
     badgeType: 'winner',
@@ -397,42 +434,6 @@ export const eventsData = [
         title: 'Live Pitch & Event Highlights',
         label: 'Pitch & Highlights',
         caption: 'Presenting live to the jury, receiving the certificate from dignitaries, and milestone celebration with the team.',
-      },
-    ],
-  },
-  {
-    id: 'open-data-week-2024',
-    number: '02',
-    category: 'Runner-Up · Datathon',
-    badge: 'Third Runner-Up · Datathon',
-    badgeType: 'winner',
-    theme: 'Open Data & Civic Innovation',
-    title: 'Open Data Week 2024',
-    subtitle: 'Open Datathon · Third Runner-Up',
-    organizer: 'Open Data Nepal & Community Partners',
-    dates: 'March 1 – 7, 2024',
-    location: 'Kathmandu, Nepal',
-    team: 'Team TechBug',
-    prize: 'Third Runner-Up · Certificate of Recognition',
-    description:
-      'Secured Third Runner-Up in the Open Data Week 2024 Datathon competing as "Team TechBug". Collaborated with teammates to process, analyze, and extract actionable insights from public civic and governance datasets, building a data-driven prototype presented live to data analysts, domain experts, and the evaluation jury.',
-    highlights: [
-      'Engineered data analytics and visualization workflows from open public datasets with Team TechBug.',
-      'Clinched Third Runner-Up among competitive data science and developer teams.',
-      'Presented findings and live analytical insights before the open data evaluation jury.',
-    ],
-    photos: [
-      {
-        src: '/events/open-data-week-ceremony.jpg',
-        title: 'Stage Award & Certificate Ceremony',
-        label: 'Ceremony & Certificates',
-        caption: 'Team TechBug on stage receiving their certificates and awards at the Open Data Week 2024 Datathon.',
-      },
-      {
-        src: '/events/open-data-week-team.jpg',
-        title: 'Team TechBug at Open Data Week',
-        label: 'Team TechBug',
-        caption: 'Team TechBug (Sanjay Malla, Sudarshan Pokhrel, Subhindra Budhathoki, Shreejit Gautam) at the datathon.',
       },
     ],
   },
@@ -711,7 +712,7 @@ function Events() {
                   <div className="event-card-meta-row">
                     <span className="event-card-prize-badge">
                       <Award size={13} strokeWidth={2} />
-                      {event.prize.split(' & ')[0]}
+                      {event.cardPrize || event.prize.split(' & ')[0]}
                     </span>
                     <span className="event-card-photos-count">
                       <Maximize2 size={12} strokeWidth={2} /> {event.photos.length} Photos
@@ -876,9 +877,15 @@ function IntroAnimation({ onComplete, reduceMotion }) {
   const [progress, setProgress] = useState(0)
   const [isExiting, setIsExiting] = useState(false)
   const [isRemoved, setIsRemoved] = useState(false)
+  const didComplete = useRef(false)
 
   useEffect(() => {
+    if (didComplete.current) {
+      setIsRemoved(true)
+      return undefined
+    }
     if (reduceMotion) {
+      didComplete.current = true
       onComplete()
       setIsRemoved(true)
       return undefined
@@ -886,6 +893,10 @@ function IntroAnimation({ onComplete, reduceMotion }) {
 
     const originalOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+    let cancelled = false
+    let minimumTimer
+    let revealTimer
+    let removalTimer
 
     // Preload critical assets in parallel
     const preloadPromise = Promise.all(
@@ -915,26 +926,32 @@ function IntroAnimation({ onComplete, reduceMotion }) {
     rafId = requestAnimationFrame(updateProgress)
 
     // Ensure intro displays for ~800ms before triggering curtain exit
-    const minTimer = new Promise((resolve) => setTimeout(resolve, 800))
+    const minTimer = new Promise((resolve) => { minimumTimer = window.setTimeout(resolve, 800) })
 
     Promise.all([preloadPromise, minTimer]).then(() => {
+      if (cancelled) return
       setProgress(100)
       setIsExiting(true)
 
       // Curtain slides up; trigger smooth page reveal at ~1000ms
-      setTimeout(() => {
+      revealTimer = window.setTimeout(() => {
+        didComplete.current = true
         onComplete()
         document.body.style.overflow = originalOverflow
       }, 250)
 
       // Remove intro from DOM after curtain is completely gone
-      setTimeout(() => {
+      removalTimer = window.setTimeout(() => {
         setIsRemoved(true)
       }, 750)
     })
 
     return () => {
+      cancelled = true
       cancelAnimationFrame(rafId)
+      window.clearTimeout(minimumTimer)
+      window.clearTimeout(revealTimer)
+      window.clearTimeout(removalTimer)
       document.body.style.overflow = originalOverflow
     }
   }, [reduceMotion, onComplete])
@@ -976,6 +993,7 @@ export default function App({ workSection, experienceSection } = {}) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [active, setActive] = useState('home')
   const [introComplete, setIntroComplete] = useState(false)
+  const handleIntroComplete = useCallback(() => setIntroComplete(true), [])
   const heroRef = useRef(null)
   const reduceMotion = useReducedMotion()
 
@@ -1017,7 +1035,7 @@ export default function App({ workSection, experienceSection } = {}) {
   return (
     <>
       <IntroAnimation
-        onComplete={() => setIntroComplete(true)}
+        onComplete={handleIntroComplete}
         reduceMotion={reduceMotion}
       />
       <div className={`site-shell overflow-hidden ${introComplete ? 'is-revealed' : 'is-loading'}`}>

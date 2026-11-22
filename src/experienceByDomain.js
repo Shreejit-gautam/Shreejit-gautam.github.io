@@ -53,7 +53,7 @@ const prismExperienceByDomain = {
     ],
   },
   'shreejit.me': {
-    role: 'Fullstack',
+    role: 'Fullstack Developer',
     company: 'Prism Lab Pvt. Ltd.',
     technologiesFirst: true,
     dates: 'Dec 2025 – Present',
