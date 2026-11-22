@@ -508,8 +508,9 @@
 
 #experience .p-experience-dialog { position: fixed; inset: 0; width: min(760px, calc(100% - 32px)); max-width: none; max-height: min(85dvh, 900px); margin: auto; padding: 0; overflow: auto; border: 0; border-radius: 16px; background: #f5f2e9; color: #191919; box-shadow: 0 20px 80px #0008; }
 #experience .p-experience-dialog::backdrop { background: #121212bd; }
-#experience .p-experience-dialog-content { position: relative; padding: clamp(24px, 4vw, 45px); }
-#experience .p-experience-dialog-close { position: absolute; top: 18px; right: 20px; width: 40px; height: 40px; padding: 0; border: 1px solid #8f252b; border-radius: 50%; background: transparent; color: #8f252b; font-size: 28px; line-height: 1; cursor: pointer; }
+#experience .p-experience-dialog-content { position: relative; padding: 24px clamp(24px, 4vw, 45px) clamp(24px, 4vw, 45px); }
+#experience .p-experience-dialog-toolbar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; min-height: 72px; padding: 12px 20px 12px clamp(24px, 4vw, 45px); border-bottom: 1px solid #ded5c8; background: #f5f2e9; color: #8f252b; font: 700 10px/1.5 "Experience Space Mono", "Space Mono", monospace; letter-spacing: .08em; }
+#experience .p-experience-dialog-close { width: 40px; height: 40px; padding: 0; border: 1px solid #8f252b; border-radius: 50%; background: transparent; color: #8f252b; font-size: 28px; line-height: 1; cursor: pointer; }
 #experience .p-experience-dialog-close:hover { background: #8f252b; color: #fff; }
 #experience .p-experience-dialog-close:focus-visible { outline: 3px solid #8f252b; outline-offset: 3px; }
 #experience .p-experience-dialog-date { margin: 0 48px 8px 0; color: #8f252b; font: 700 12px/1.5 "Experience Space Mono", "Space Mono", monospace; }
@@ -572,6 +573,7 @@
   #experience .p-timeline-entry-1, #experience .p-timeline-entry-2, #experience .p-timeline-entry-3 { justify-self: stretch; }
   #experience .p-timeline-title, #experience .p-timeline-entry-2 .p-timeline-title { height: auto; min-height: 40px; }
   #experience .p-timeline-title h3 { font-size: clamp(19px, 5.9vw, 23px); line-height: 1.35; }
+  #experience .p-timeline-entry-1 .p-timeline-title h3 { white-space: normal; }
   #experience .p-timeline-date { font-size: 11px; }
   #experience .p-company { white-space: normal; font-size: 12px; line-height: 1.5; }
   #experience .p-role-summary { font-size: 14px; line-height: 1.5; }

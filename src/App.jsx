@@ -2,15 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import gsap from 'gsap'
 import {
-  ArrowDown, ArrowUpRight, BrainCircuit, Code2, Download, Github, Instagram,
-  Linkedin, Mail, Menu, ScanEye, Sparkles, X,
+  ArrowDown, ArrowUpRight, Award, BrainCircuit, Calendar, CheckCircle2, ChevronLeft,
+  ChevronRight, Code2, Download, Github, Instagram,
+  Linkedin, Mail, MapPin, Maximize2, Menu, ScanEye, Sparkles, Trophy, Users, X,
 } from 'lucide-react'
 
 const navigation = [
   ['Home', 'home'],
   ['Work', 'work'],
   ['Experience', 'experience'],
-  ['About', 'about'],
+  ['Events', 'events'],
   ['Contact', 'contact'],
 ]
 
@@ -119,7 +120,7 @@ export function Header({ active, menuOpen, setMenuOpen }) {
         const rect = element.getBoundingClientRect()
         return rect.top <= 36 && rect.bottom > 36
       })
-      setDarkBackground(section?.id === 'work' || section?.id === 'contact')
+      setDarkBackground(section?.id === 'work' || section?.id === 'events' || section?.id === 'contact')
     }
     const scheduleHide = () => {
       window.clearTimeout(hideTimer)
@@ -178,7 +179,7 @@ export function SocialRail() {
         const rect = link.getBoundingClientRect()
         const center = rect.top + rect.height / 2
         const section = sections.find(item => item.rect.top <= center && item.rect.bottom > center)
-        return section?.id === 'work' || section?.id === 'contact'
+        return section?.id === 'work' || section?.id === 'events' || section?.id === 'contact'
       })
       setDarkLinks(previous => next.length === previous.length && next.every((value, index) => value === previous[index]) ? previous : next)
     }
@@ -266,7 +267,7 @@ function Hero({ heroRef, reduceMotion }) {
         <span><b>Hi,</b> Iam</span>
       </motion.div>
       <motion.div className="availability" {...entrance(0.3)}>
-        <span className="availability-dot" /> INDEPENDENT CREATIVE DEVELOPER
+        <span className="availability-dot" /> INDEPENDENT DEVELOPER
       </motion.div>
 
       <div className="hero-art absolute inset-0 pointer-events-none" aria-hidden="true">
@@ -348,11 +349,470 @@ function Work() {
   )
 }
 
-function About() {
+export const eventsData = [
+  {
+    id: 'mbmc-ideax-2024',
+    number: '01',
+    badge: 'Track Winner · Agrotech',
+    badgeType: 'winner',
+    theme: 'Agriculture & Technology',
+    title: 'MBMC IdeaX 2024',
+    subtitle: 'Agrotech Theme Winner · 1st Place',
+    organizer: 'School of Science and Technology, Madan Bhandari Memorial College',
+    dates: 'September 27 – 29, 2024',
+    location: 'Kathmandu, Nepal',
+    team: 'Team Botanical',
+    prize: 'Rs. 10,000 Cash Prize & Certificate of Appreciation',
+    description:
+      'Secured 1st place in the Agriculture and Technology (AgroTech) track at MBMC IdeaX 2024. Collaborated with Team Botanical to engineer and pitch an innovative agricultural technology concept designed to address critical challenges in crop health, smart detection, and real-time farmer advisory. Conferred the official Certificate of Appreciation and the Track Winner award by college leadership and the School of Science and Technology.',
+    highlights: [
+      'Architected the solution and delivered the live technical pitch before the jury panel.',
+      'Clinched 1st place in the Agrotech track among competing multi-disciplinary collegiate teams.',
+      'Honored with the official Certificate of Appreciation and the Rs. 10,000 Track Winner cheque.',
+    ],
+    photos: [
+      {
+        src: '/events/mbmc-ideax-2024-stage.jpg',
+        title: 'Track Winner Award Ceremony',
+        label: 'Stage & Cheque',
+        caption: 'Team Botanical holding the Track Winner (Agro Tech) cheque of Rs. 10,000 on stage with MBMC leadership.',
+      },
+      {
+        src: '/events/mbmc-ideax-2024-certificate.jpg',
+        title: 'Certificate of Appreciation',
+        label: 'Official Certificate',
+        caption: 'Conferred upon Shreejit Gautam for outstanding idea under "Agriculture and Technology" in MBMC IdeaX 2024.',
+      },
+      {
+        src: '/events/mbmc-ideax-2024-moments.jpg',
+        title: 'Live Pitch & Event Highlights',
+        label: 'Pitch & Highlights',
+        caption: 'Presenting live to the jury, receiving the certificate from dignitaries, and milestone celebration with the team.',
+      },
+    ],
+  },
+  {
+    id: 'open-data-week-2024',
+    number: '02',
+    badge: 'Third Runner-Up · Datathon',
+    badgeType: 'winner',
+    theme: 'Open Data & Civic Innovation',
+    title: 'Open Data Week 2024',
+    subtitle: 'Open Datathon · Third Runner-Up',
+    organizer: 'Open Data Nepal & Community Partners',
+    dates: 'March 1 – 7, 2024',
+    location: 'Kathmandu, Nepal',
+    team: 'Team TechBug',
+    prize: 'Third Runner-Up · Certificate of Recognition',
+    description:
+      'Secured Third Runner-Up in the Open Data Week 2024 Datathon competing as "Team TechBug". Collaborated with teammates to process, analyze, and extract actionable insights from public civic and governance datasets, building a data-driven prototype presented live to data analysts, domain experts, and the evaluation jury.',
+    highlights: [
+      'Engineered data analytics and visualization workflows from open public datasets with Team TechBug.',
+      'Clinched Third Runner-Up among competitive data science and developer teams.',
+      'Presented findings and live analytical insights before the open data evaluation jury.',
+    ],
+    photos: [
+      {
+        src: '/events/open-data-week-ceremony.jpg',
+        title: 'Stage Award & Certificate Ceremony',
+        label: 'Ceremony & Certificates',
+        caption: 'Team TechBug on stage receiving their certificates and awards at the Open Data Week 2024 Datathon.',
+      },
+      {
+        src: '/events/open-data-week-team.jpg',
+        title: 'Team TechBug at Open Data Week',
+        label: 'Team TechBug',
+        caption: 'Team TechBug (Sanjay Malla, Sudarshan Pokhrel, Subhindra Budhathoki, Shreejit Gautam) at the datathon.',
+      },
+    ],
+  },
+  {
+    id: 'nasa-spaceapps-2024',
+    number: '03',
+    badge: 'NASA Space Apps · 36-Hr Hackathon',
+    badgeType: 'hackathon',
+    theme: 'Space Science & Planetary Problem Solving',
+    title: 'NASA Space Apps 2024',
+    subtitle: 'International Space Apps Challenge · Kathmandu',
+    organizer: 'Nepal Research and Collaboration Center (NRCC) & NASA',
+    dates: 'October 5 – 6, 2024',
+    location: 'Kathmandu, Nepal',
+    team: '3-Member Collaborative Team',
+    prize: '36-Hr Residential Sprint · Certificate of Participation',
+    description:
+      'Participated in the intensive 36-hour residential NASA International Space Apps Challenge 2024 (Kathmandu lead, hosted by NRCC). Collaborated with a multidisciplinary team to rapidly build and present an innovative software prototype leveraging NASA open satellite, planetary science, and Earth observation datasets to solve real-world global challenges.',
+    highlights: [
+      'Engineered a working prototype within 36 hours of continuous, residential sprint development.',
+      'Leveraged open NASA satellite, Earth observation, and space exploration datasets.',
+      'Conferred the official Certificate of Participation by NRCC and NASA Space Apps Kathmandu leads.',
+    ],
+    photos: [
+      {
+        src: '/events/nasa-spaceapps-team.jpg',
+        title: 'Team Photo at NASA Space Apps Kathmandu',
+        label: 'Photo Wall & Team',
+        caption: 'Standing before the official NASA International Space Apps Challenge Kathmandu photo wall with teammates.',
+      },
+      {
+        src: '/events/nasa-spaceapps-certificate.jpg',
+        title: 'Certificate of Participation',
+        label: 'Official Certificate',
+        caption: 'Presented to Shreejit Gautam by NRCC for completing the 36-hour residential NASA Space Apps hackathon.',
+      },
+      {
+        src: '/events/nasa-spaceapps-stage.jpg',
+        title: 'Award & Recognition Ceremony',
+        label: 'Stage Ceremony',
+        caption: 'Receiving recognition and participation certificates from local leads and organizers on stage.',
+      },
+    ],
+  },
+]
+
+function Events() {
+  const [activePhotoIndices, setActivePhotoIndices] = useState(() =>
+    eventsData.reduce((acc, ev) => ({ ...acc, [ev.id]: 0 }), {})
+  )
+  const [activeSlide, setActiveSlide] = useState(0)
+  const [lightbox, setLightbox] = useState(null)
+  const scrollTrackRef = useRef(null)
+
+  const scrollToSlide = (index) => {
+    const track = scrollTrackRef.current
+    if (!track) return
+    const targetIndex = Math.max(0, Math.min(index, eventsData.length - 1))
+    const slides = track.querySelectorAll('.events-slide')
+    if (slides[targetIndex]) {
+      const targetLeft = slides[targetIndex].offsetLeft
+      track.scrollTo({ left: targetLeft, behavior: 'smooth' })
+      setActiveSlide(targetIndex)
+    }
+  }
+
+  useEffect(() => {
+    const track = scrollTrackRef.current
+    if (!track) return undefined
+
+    let timeoutId = null
+    const handleScroll = () => {
+      if (timeoutId) cancelAnimationFrame(timeoutId)
+      timeoutId = requestAnimationFrame(() => {
+        const slides = track.querySelectorAll('.events-slide')
+        if (!slides.length) return
+        const trackRect = track.getBoundingClientRect()
+        let closestIdx = 0
+        let minDistance = Infinity
+
+        slides.forEach((slide, idx) => {
+          const slideRect = slide.getBoundingClientRect()
+          const distance = Math.abs(slideRect.left - trackRect.left)
+          if (distance < minDistance) {
+            minDistance = distance
+            closestIdx = idx
+          }
+        })
+
+        setActiveSlide(closestIdx)
+      })
+    }
+
+    track.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      track.removeEventListener('scroll', handleScroll)
+      if (timeoutId) cancelAnimationFrame(timeoutId)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!lightbox) return undefined
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setLightbox(null)
+      } else if (e.key === 'ArrowRight') {
+        setLightbox((prev) => {
+          if (!prev) return null
+          const ev = eventsData.find((item) => item.id === prev.eventId)
+          if (!ev) return prev
+          return { ...prev, photoIndex: (prev.photoIndex + 1) % ev.photos.length }
+        })
+      } else if (e.key === 'ArrowLeft') {
+        setLightbox((prev) => {
+          if (!prev) return null
+          const ev = eventsData.find((item) => item.id === prev.eventId)
+          if (!ev) return prev
+          return {
+            ...prev,
+            photoIndex: (prev.photoIndex - 1 + ev.photos.length) % ev.photos.length,
+          }
+        })
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [lightbox])
+
+  const activeEvent = lightbox ? eventsData.find((item) => item.id === lightbox.eventId) : null
+  const activePhoto = activeEvent ? activeEvent.photos[lightbox.photoIndex] : null
+
   return (
-    <section id="about" className="content-section about-section">
-      <div className="about-left"><p className="eyebrow light"><span>04</span> / ABOUT</p><h2>CURIOUS<br />BY <em>DESIGN.</em></h2><div className="about-mark">S<span>/</span>G</div></div>
-      <div className="about-right"><p className="about-lead">A creative mind with a developer’s toolkit.</p><p>I’m Shreejit — a developer, designer, and creator interested in the space where thoughtful ideas and useful technology come together.</p><p>From intelligent systems to expressive digital experiences, I like making things that feel as good as they work.</p><a href="#contact" className="text-link">A LITTLE MORE CONVERSATION <ArrowUpRight size={17} /></a></div>
+    <section id="events" className="content-section events-section" aria-labelledby="events-heading">
+      <div className="events-header">
+        <div>
+          <p className="eyebrow light">
+            <span>04</span> / EVENTS & ACHIEVEMENTS
+          </p>
+          <h2 id="events-heading">
+            EVENTS &<br />
+            <em>MILESTONES.</em>
+          </h2>
+        </div>
+
+        <div className="events-header-nav">
+          <div className="events-slide-pills" role="tablist" aria-label="Event slides">
+            {eventsData.map((ev, idx) => (
+              <button
+                key={ev.id}
+                type="button"
+                role="tab"
+                aria-selected={activeSlide === idx}
+                className={`events-slide-pill ${activeSlide === idx ? 'is-active' : ''}`}
+                onClick={() => scrollToSlide(idx)}
+              >
+                <span className="pill-number">{ev.number}</span>
+                <span className="pill-title">{ev.title}</span>
+                {ev.badgeType === 'winner' && <span className="pill-star">★</span>}
+              </button>
+            ))}
+          </div>
+
+          <div className="events-slider-actions">
+            <span className="events-slider-counter">
+              <strong>0{activeSlide + 1}</strong> / 0{eventsData.length}
+            </span>
+            <div className="events-slider-arrows">
+              <button
+                type="button"
+                className="events-slider-btn prev"
+                onClick={() => scrollToSlide(activeSlide - 1)}
+                disabled={activeSlide === 0}
+                aria-label="Previous event slide"
+              >
+                <ChevronLeft size={19} strokeWidth={2.2} />
+              </button>
+              <button
+                type="button"
+                className="events-slider-btn next"
+                onClick={() => scrollToSlide(activeSlide + 1)}
+                disabled={activeSlide === eventsData.length - 1}
+                aria-label="Next event slide"
+              >
+                <ChevronRight size={19} strokeWidth={2.2} />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="events-track-wrapper">
+        <div
+          ref={scrollTrackRef}
+          className="events-track"
+          tabIndex={0}
+          role="region"
+          aria-label="Events sideways scrollable list"
+        >
+          {eventsData.map((event, eventIndex) => {
+            const currentPhotoIndex = activePhotoIndices[event.id] ?? 0
+            const currentPhoto = event.photos[currentPhotoIndex]
+
+            return (
+              <div key={event.id} className="events-slide" data-index={eventIndex}>
+                <article className="event-card">
+                  <div className="event-info">
+                    <div className="event-topline">
+                      <span className="event-number">{event.number}</span>
+                      <span className={`event-badge ${event.badgeType}`}>
+                        {event.badgeType === 'winner' ? (
+                          <Trophy size={13} strokeWidth={2.2} />
+                        ) : (
+                          <Sparkles size={13} strokeWidth={2.2} />
+                        )}
+                        {event.badge}
+                      </span>
+                    </div>
+
+                    <h3 className="event-title">{event.title}</h3>
+                    <p className="event-subtitle">{event.subtitle}</p>
+
+                    <div className="event-meta-chips">
+                      <span className="event-meta-chip">
+                        <Calendar size={13} strokeWidth={1.8} />
+                        {event.dates}
+                      </span>
+                      <span className="event-meta-chip">
+                        <MapPin size={13} strokeWidth={1.8} />
+                        {event.location}
+                      </span>
+                      <span className="event-meta-chip">
+                        <Users size={13} strokeWidth={1.8} />
+                        {event.team}
+                      </span>
+                      <span className="event-meta-chip highlight">
+                        <Award size={13} strokeWidth={1.8} />
+                        {event.prize}
+                      </span>
+                    </div>
+
+                    <p className="event-description">{event.description}</p>
+
+                    <div className="event-highlights">
+                      <h4 className="event-highlights-title">Key Highlights</h4>
+                      {event.highlights.map((point, i) => (
+                        <div key={i} className="event-highlight-item">
+                          <CheckCircle2 size={16} strokeWidth={2} className="event-highlight-icon" />
+                          <span>{point}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="event-media">
+                    <div
+                      className="event-gallery-main"
+                      onClick={() => setLightbox({ eventId: event.id, photoIndex: currentPhotoIndex })}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Open full view of ${currentPhoto.title}`}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          setLightbox({ eventId: event.id, photoIndex: currentPhotoIndex })
+                        }
+                      }}
+                    >
+                      <img src={currentPhoto.src} alt={currentPhoto.title} loading="lazy" />
+                      <div className="event-gallery-overlay">
+                        <span className="event-gallery-zoom">
+                          <Maximize2 size={13} strokeWidth={2} /> Full View
+                        </span>
+                        <div className="event-gallery-caption">
+                          <strong>{currentPhoto.title}</strong>
+                          <p>{currentPhoto.caption}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="event-gallery-thumbs" role="tablist" aria-label="Event photos">
+                      {event.photos.map((photo, pIdx) => (
+                        <button
+                          key={photo.src}
+                          type="button"
+                          role="tab"
+                          aria-selected={currentPhotoIndex === pIdx}
+                          className={`event-gallery-thumb ${currentPhotoIndex === pIdx ? 'is-active' : ''}`}
+                          onClick={() =>
+                            setActivePhotoIndices((prev) => ({ ...prev, [event.id]: pIdx }))
+                          }
+                        >
+                          <div className="event-gallery-thumb-img">
+                            <img src={photo.src} alt={photo.label} loading="lazy" />
+                          </div>
+                          <span className="event-gallery-thumb-label">{photo.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </article>
+              </div>
+            )
+          })}
+        </div>
+
+        <div className="events-slider-bottom">
+          <div className="events-slider-hint">
+            <span>← SCROLL OR DRAG SIDEWAYS →</span>
+          </div>
+          <div className="events-slider-dots">
+            {eventsData.map((ev, i) => (
+              <button
+                key={ev.id}
+                type="button"
+                className={`events-dot ${activeSlide === i ? 'is-active' : ''}`}
+                onClick={() => scrollToSlide(i)}
+                aria-label={`Go to event slide ${i + 1}: ${ev.title}`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {lightbox && activePhoto && (
+        <div
+          className="event-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={activePhoto.title}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setLightbox(null)
+          }}
+        >
+          <div className="event-lightbox-dialog">
+            <div className="event-lightbox-topbar">
+              <span className="event-lightbox-counter">
+                {activeEvent?.title} · Photo {lightbox.photoIndex + 1} of {activeEvent?.photos.length}
+              </span>
+              <button
+                type="button"
+                className="event-lightbox-close"
+                onClick={() => setLightbox(null)}
+                aria-label="Close full view"
+              >
+                <X size={20} strokeWidth={2} />
+              </button>
+            </div>
+
+            <div className="event-lightbox-img-wrap">
+              <img src={activePhoto.src} alt={activePhoto.title} />
+              {activeEvent && activeEvent.photos.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    className="event-lightbox-nav prev"
+                    onClick={() =>
+                      setLightbox((prev) => ({
+                        ...prev,
+                        photoIndex:
+                          (prev.photoIndex - 1 + activeEvent.photos.length) %
+                          activeEvent.photos.length,
+                      }))
+                    }
+                    aria-label="Previous photo"
+                  >
+                    <ChevronLeft size={24} />
+                  </button>
+                  <button
+                    type="button"
+                    className="event-lightbox-nav next"
+                    onClick={() =>
+                      setLightbox((prev) => ({
+                        ...prev,
+                        photoIndex: (prev.photoIndex + 1) % activeEvent.photos.length,
+                      }))
+                    }
+                    aria-label="Next photo"
+                  >
+                    <ChevronRight size={24} />
+                  </button>
+                </>
+              )}
+            </div>
+
+            <div className="event-lightbox-bottombar">
+              <strong>{activePhoto.title}</strong>
+              <p>{activePhoto.caption}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
@@ -373,7 +833,7 @@ function Contact() {
     <section id="contact" className="content-section contact-section">
       <div className="contact-top"><p className="eyebrow light"><span>05</span> / GET IN TOUCH</p><span>HAVE AN IDEA? LET’S MAKE IT REAL.</span></div>
       <h2>LET’S MAKE<br /><em>SOMETHING</em><br />MATTER<span>.</span></h2>
-      <div className="contact-bottom"><p>Good work starts with a conversation.<br />Find me online and say hello.</p><MagneticLink className="button contact-button" href="https://www.linkedin.com/in/shreejit-gautam-a84056437/" target="_blank" rel="noreferrer">Find me on LinkedIn <ArrowUpRight size={19} /></MagneticLink></div>
+      <div className="contact-bottom"><p>Good work starts with a conversation.<br />Find me online and say hello.</p></div>
       <footer><span>© 2026 SHREEJIT GAUTAM</span><div>{socialLinks.map(({ label, href, Icon }) => <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label}><Icon size={17} /></a>)}</div><a href="#home">BACK TO TOP ↑</a></footer>
     </section>
   )
@@ -429,7 +889,7 @@ export default function App({ workSection, experienceSection } = {}) {
         <Hero heroRef={heroRef} reduceMotion={reduceMotion} />
         {workSection || <Work />}
         {experienceSection || <Experience />}
-        <About />
+        <Events />
         <Contact />
       </main>
     </div>

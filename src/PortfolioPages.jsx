@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { experience } from './App.jsx'
+import { getPrismExperienceForDomain } from './experienceByDomain.js'
 import './portfolio-pages.css'
 
 const projects = [
@@ -335,6 +336,10 @@ function AchievementList({ points }) {
   return <ul className="p-achievements">{points.map(point => <li key={point}><img src={experienceAssets + 'bullet.svg'} alt="" /><span>{point}</span></li>)}</ul>
 }
 
+function ProjectTechnologies({ stack }) {
+  return <><h4>Technologies</h4><Tags tags={stack.split(' · ')} /></>
+}
+
 function TimelineEntry({ job, index, onOpen }) {
   const companyDivider = ['divider-prism.svg', 'divider-crimson.svg', 'divider-freelance.svg'][index]
   return <Reveal className={'p-timeline-entry p-timeline-entry-' + (index + 1)} delay={index * 0.08}>
@@ -359,7 +364,7 @@ function Expertise() {
 }
 
 function Impact() {
-  const metrics = [['2+', 'Years of experience'], ['10K+', 'Concurrent users handled'], ['5+', 'Projects delivered']]
+  const metrics = [['2+', 'Years of experience'], ['5K+', 'Concurrent users handled'], ['5+', 'Projects delivered']]
   return <section className="p-impact" aria-label="Portfolio impact"><div className="p-impact-metrics">{metrics.map(([number, label]) => <div key={number}><strong>{number}</strong><span>{label}</span></div>)}</div><div className="p-impact-actions"><a className="button button-primary" href="#contact">Let’s Talk <ArrowUpRight size={18} /></a></div></section>
 }
 
@@ -444,6 +449,9 @@ export function ExperienceSection() {
   const journeyRef = useRef(null)
   const timelinePathRef = useRef(null)
   const reduceMotion = useReducedMotion()
+  const previewDomain = import.meta.env.DEV && new URLSearchParams(window.location.search).get('previewDomain')
+  const domainExperience = getPrismExperienceForDomain(previewDomain || window.location.hostname)
+  const displayedJourney = domainExperience ? [domainExperience, ...journeyEntries.slice(1)] : journeyEntries
   useTimelineDrawing(journeyRef, timelinePathRef, reduceMotion)
   useEffect(() => {
     const dialog = dialogRef.current
@@ -467,14 +475,15 @@ export function ExperienceSection() {
         <SectionLabel>03 / EXPERIENCE</SectionLabel><h2 id="experience-title"><span className="p-title-the">THE</span><span className="p-title-journey">JOURNEY.</span><img className="p-journey-underline" src="/figma-work-experience/underline.svg" alt="" /></h2>
       </Reveal>
       <div className="p-journey-tagline"><p>Learning. Building. Evolving.</p><span className="p-red-rule" /></div>
-      {journeyEntries.map((job, index) => <TimelineEntry key={job.company} job={job} index={index} onOpen={setSelectedJob} />)}
+      {displayedJourney.map((job, index) => <TimelineEntry key={job.company} job={job} index={index} onOpen={setSelectedJob} />)}
       <Reveal className="p-journey-expertise"><Expertise /></Reveal>
       <Reveal className="p-journey-impact"><Impact /></Reveal>
     </div>
     </div>
     <dialog id="experience-dialog" ref={dialogRef} className="p-experience-dialog" aria-labelledby="experience-dialog-title" onClose={() => setSelectedJob(null)} onClick={event => { if (event.target === event.currentTarget) event.currentTarget.close() }}>
-      {selectedJob && <div className="p-experience-dialog-content">
-        <button type="button" className="p-experience-dialog-close" onClick={() => dialogRef.current?.close()} aria-label="Close experience details">×</button>
+      {selectedJob && <>
+        <div className="p-experience-dialog-toolbar"><span>EXPERIENCE DETAILS</span><button type="button" className="p-experience-dialog-close" onClick={() => dialogRef.current?.close()} aria-label="Close experience details">×</button></div>
+        <div className="p-experience-dialog-content">
         <p className="p-experience-dialog-date">{selectedJob.displayDate || selectedJob.dates}</p>
         <h2 id="experience-dialog-title">{selectedJob.role}</h2>
         <p className="p-experience-dialog-company">{selectedJob.company}{selectedJob.location && <> / {selectedJob.displayLocation || selectedJob.location}</>}</p>
@@ -483,13 +492,14 @@ export function ExperienceSection() {
         <AchievementList points={selectedJob.highlights} />
         {selectedProjects.map(project => <section className="p-experience-detail-project" key={project.title}>
           <h3>{project.title}</h3>
-          <p>{project.subtitle}</p>
+          {project.subtitle && <p>{project.subtitle}</p>}
+          {selectedJob.technologiesFirst && <ProjectTechnologies stack={project.stack} />}
           <AchievementList points={project.points} />
-          <h4>Technologies</h4>
-          <Tags tags={project.stack.split(' · ')} />
+          {!selectedJob.technologiesFirst && <ProjectTechnologies stack={project.stack} />}
           {project.contentUrl && <a href={project.contentUrl} target="_blank" rel="noreferrer">View project post <ArrowUpRight size={16} /></a>}
         </section>)}
-      </div>}
+        </div>
+      </>}
     </dialog>
   </section>
 }

@@ -25,3 +25,5 @@ Vercel will deploy future pushes to the configured production branch automatical
 - Navigation, social links, project links, and the hero content are in `src/App.jsx`.
 - The LinkedIn and Instagram links currently open searches for Shreejit Gautam. Replace those URLs in `socialLinks` and the contact section with direct profile or contact links when available.
 - The experience figures are taken from the supplied reference image.
+- The first experience entry is selected by hostname in `src/experienceByDomain.js`. `shreejit.me` and `shreejitgautam.com.np` have separate content; other hosts keep the default entry. The `www` version of either domain uses the same content as its root domain.
+- To preview a domain-specific entry while running the development server, open `http://localhost:5173/?previewDomain=shreejit.me#experience` or `http://localhost:5173/?previewDomain=shreejitgautam.com.np#experience`. The preview parameter is ignored in production builds.
