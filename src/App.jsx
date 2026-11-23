@@ -105,15 +105,9 @@ function BrandMark() {
   return <a className="monogram" href="#home" aria-label="Shreejit Gautam, back to home"><span>S</span><i>/</i><span>G</span></a>
 }
 
-const domainResumes = new Map([
-  ['shreejit.me', '/Shreejit_Gtm.pdf'],
-  ['shreejitgautam.com.np', '/shreejitgautam-com-np-resume.pdf'],
-])
-
 function HeaderAction({ contact = false, onContactClick }) {
-  const resume = !contact && domainResumes.get(getSiteHostname())
-  const downloadResume = Boolean(resume)
-  const href = contact ? '#contact' : resume || '/shreejit-gautam-cv.pdf'
+  const downloadResume = !contact && getSiteHostname() === 'shreejit.me'
+  const href = contact ? '#contact' : downloadResume ? '/Shreejit_Gtm.pdf' : '/shreejit-gautam-cv.pdf'
   return <a className="header-cta" href={href} download={downloadResume ? 'Shreejit_Gtm.pdf' : undefined} target={!contact && !downloadResume ? '_blank' : undefined} rel={!contact && !downloadResume ? 'noreferrer' : undefined} onClick={contact ? onContactClick : undefined}>
     {contact ? <>Let’s Talk <ArrowUpRight size={16} strokeWidth={2} /></> : <><Download size={16} strokeWidth={2} /> Resume</>}
   </a>
